@@ -13,8 +13,13 @@ namespace GetProductsMVC.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
-
-
+        public string Status { get; set; }
+        public List<ProductFile> Files { get; set; }
+        public string PaymentMethod { get; set; }
+        public ProductBasePrice BasePrice { get; set; }
+        public ProductBaseReward BaseReward { get; set; }
+        public ProductInventory Inventory { get; set; }
+        public ProductPrice Price { get; set; }
 
 
 

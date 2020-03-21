@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GetProductsMVC.Models;
+using GetProductsMVC.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,45 +17,20 @@ namespace GetProductsMVC.Controllers
     public class ProductsController : Controller
     {
         private IHttpClientFactory _httpClientFactory;
+        private IProductService _productService;
 
-        public ProductsController(IHttpClientFactory httpClientFactory)
+
+        public ProductsController(IHttpClientFactory httpClientFactory, IProductService productService)
         {
             _httpClientFactory = httpClientFactory;
-            //GetToken();
-        }
-        public async Task<string> GetToken()
-        {
-            var client = _httpClientFactory.CreateClient("Auth");
-
-            var dict = new Dictionary<string, string>();
-            dict.Add("grant_type", "client_credentials");
-            dict.Add("client_id", "cl_$xVN8s0YxxxA4A676jFy4wsCXBG9xsR5AMx3Vs");
-            dict.Add("client_secret", "1InM0IdOV0OeIYw05bYPuqk504GcDL4z2MjFERUXF3f1AUyW4mQt9WTbz9voFTZe");            
-
-
-            var res = await client.PostAsync(client.BaseAddress, new FormUrlEncodedContent(dict));
-            var str = res.Content.ReadAsStringAsync();
-
-            Authentication authentication = JsonConvert.DeserializeObject<Authentication>(str.Result);
-
-            return authentication.access_token;
+            _productService = productService;
         }
 
 
         // GET: Products
         public async Task<ActionResult> Index()
         {
-            var token = await GetToken();
-            var client = _httpClientFactory.CreateClient("simplestore");
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-
-            var res = await client.GetAsync(client.BaseAddress + "v1/products");
-            var str = res.Content.ReadAsStringAsync();
-            var pros = str.Result;
-
-            ResponseObject products = JsonConvert.DeserializeObject<ResponseObject>(str.Result);
-
-            return View(products);
+            return View(await _productService.GetAsync());
         }
 
         // GET: Products/Details/5

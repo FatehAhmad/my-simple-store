@@ -1,30 +1,80 @@
-﻿@model GetProductsMVC.Models.ResponseObject
+﻿@model GetProductsMVC.Models.ResponseObject<List<Product>>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Products</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Result) {
-        <tr>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="row">
+
+    @if (Model.StatusCode == "OK")
+    {
+        @for (int i = 0; i < Model.Result.Count(); i++)
+        {
+            //Breaking the model items into separate rows of three items each
+            if (i > 0 && i % 3 == 0)
+            {
+            @:</div><div class="row">
+                // close and start new row
+            }
+
+            <div class="col-md-4">
+                <div class="card border-primary mb-4 box-shadow">
+
+                    @if (Model.Result[i].Files.Count > 0)
+                    {
+                        <img class="card-img-top" data-src="@Model.Result[i].Files.FirstOrDefault().EdgeUrl/@Model.Result[i].Files.FirstOrDefault().AccessUrl" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;"
+                             src="@Model.Result[i].Files.FirstOrDefault().EdgeUrl/@Model.Result[i].Files.FirstOrDefault().AccessUrl"
+                             data-holder-rendered="true">
+                    }
+                    else
+                    {
+                        <img class="card-img-top" data-src="~/not-available.png" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;"
+                             src="~/not-available.png"
+                             data-holder-rendered="true">
+                    }
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h5>@Model.Result[i].Title</h5>
+                            </div>
+                            <div class="col-md-5">
+                                <h5 style="float: right;">@Model.Result[i].Price.RetailPrice<b> $</b></h5>
+                            </div>
+                        </div>
+
+                        <p class="card-text">@Model.Result[i].Description</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                            </div>
+                            <small class="text-muted">9 mins</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                Sorry but API is saying <b>@Model.StatusCode</b>
+            </div>
+        </div>
+    }
+
+
+
+
+</div>
+
+
+
+
+
